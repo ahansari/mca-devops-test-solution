@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_DB: "postgres"
+      POSTGRES_USER: "myapplication"
+      POSTGRES_PASSWORD: "M3P@ssw0rd!"
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    environment:
+      SPRING_POSTGRES_URL: "jdbc:postgresql://postgres:5432/postgres"
+      SPRING_POSTGRES_USERNAME: "myapplication"
+      SPRING_POSTGRES_PASSWORD: "M3P@ssw0rd!"
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    environment:
+      BACKEND_URL: "http://backend-service:8080"
+    depends_on:
+      - backend
+    ports:
+      - "4200:4200"
